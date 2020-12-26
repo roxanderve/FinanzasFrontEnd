@@ -185,35 +185,39 @@
         <!-- Ingreso de  los items -->
         <section class="form">
           <form action="" class="text-center">
-          <div class="row">
-            <div class="form-group col-lg-6">
-              <input v-model="nombreitem" @keyup.enter="crearItem" type="text" class="form-control" placeholder="Nombre del ítem">
+            <div class="row">
+              <div class="form-group col-lg-6">
+                <input v-model="nombreitem" @keyup.enter="crearItem" type="text" class="form-control" placeholder="Nombre del ítem">
+              </div>
+              <div class="form-group col-lg-6">
+                <input v-model="valor" @keyup.enter="crearItem" type="number" class="form-control" placeholder="Valor del ítem">
+              </div>
             </div>
-            <div class="form-group col-lg-6">
-              <input v-model="valor" @keyup.enter="crearItem" type="number" class="form-control" placeholder="Valor del ítem" >
+            <div class="row">  
+              <div class="form-group col-lg-6">
+                <b-form-select v-model="tipo" @keyup.enter="crearItem" :options="options" ></b-form-select>
+              </div>
+              <div class="form-group col-lg-6">
+                <b-form-select v-model="subtipo" @keyup.enter="crearItem">
+                  <option disabled value="">Seleccione un subtipo</option>
+                  <opcion>Transporte</opcion>
+                  <option>Salario</option>
+                  <option>Servicios Públicos</option>
+                  <opcion>Casa</opcion>
+                  <option>Mercado Personal</option>
+                  <option>Cuidado Personal</option>
+                </b-form-select>
+              </div>
             </div>
-          </div>
-          <div class="row">  
-            <div class="form-group col-lg-6">
-              <b-form-select v-model="tipo" @keyup.enter="crearItem" :options="options" ></b-form-select>
-              <div class="mt-3"><strong>{{ tipo }}</strong></div>
-            </div>
-            <div class="form-group col-lg-6">
-              <b-form-select v-model="subtipo" @keyup.enter="crearItem">
-                <option disabled value="">Seleccione un subtipo</option>
-                <opcion>Transporte</opcion>
-                <option>Salario</option>
-                <option>Servicios Públicos</option>
-                <opcion>Casa</opcion>
-                <option>Mercado Personal</option>
-                <option>Cuidado Personal</option>
-              </b-form-select>
-              <p>{{subtipo}}</p>
+            <div class="row">  
+              <div class="form-group col-lg-4">
+                <input v-model="fecha" @keyup.enter="crearItem" type="date" class="form-control" name="fecha" min="2020-12-25" step="1" />
+              </div>
             </div> 
-            <!-- Botón para añadir -->
-            <div class="form-group">
-              <input @click="crearItem" type="button" value="Añadir ítem" class="btn btn-success">
-            </div>
+              <!-- Botón para añadir -->
+              <div class="form-group">
+                <input @click="crearItem" type="button" value="Añadir ítem" class="btn btn-success">
+              </div>
           </form>
         </section>
         <!-- Tabla donde se muestran los datos -->
@@ -227,7 +231,8 @@
                         <th scope="col">Valor</th>
                         <th scope="col">Tipo</th>
                         <th scope="col">Subtipo</th>
-                        <th> Acciones</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col"> Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -246,7 +251,7 @@
                         <td>
                             <span v-if="formActualizar && idActualizar == index">
                                 <!-- Formulario para actualizar -->
-                                <input v-model="valorActualizar" type="text" class="form-control">
+                                <input v-model="valorActualizar" type="number" class="form-control">
                             </span>
                             <span v-else>
                                 <!-- Dato valor -->
@@ -271,6 +276,16 @@
                             <span v-else>
                                 <!-- Dato subtipo -->
                                 {{ item.subtipo }}
+                            </span>
+                        </td>
+                        <td>
+                            <span v-if="formActualizar && idActualizar == index">
+                                <!-- Formulario para actualizar -->
+                                <input v-model="fechaActualizar" type="date" class="form-control">
+                            </span>
+                            <span v-else>
+                                <!-- Dato subtipo -->
+                                {{ item.fecha }}
                             </span>
                         </td>
                         <td>
@@ -303,6 +318,8 @@
 
 <script>
     import axios from "axios";
+    import Datepicker from 'vuejs-datepicker';
+
     export default{
         name: "ini_session",
         data: function(){
@@ -313,6 +330,8 @@
                 email: "",
                 showModal: false,
                 nuevo_username:"",
+                Datepicker,
+                fecha: '',
             // Input nombre
             nombreitem: '',
             // Input valor
@@ -335,7 +354,7 @@
             // Input nombre dentro del formulario de actualizar
             nombreActualizar: '',
             // Input valor dentro del formulario de actualizar
-            edadActualizar: '',
+            valorActualizar: '',
             // Lista de items
             items: [] 
             }
@@ -373,6 +392,7 @@
                 this.valor = '';
                 this.tipo = '';
                 this.subtipo = '';
+                this.fecha = '';
             },
             verFormActualizar: function (item_id) {
                 // Antes de mostrar el formulario de actualizar, rellenamos sus campos
@@ -381,6 +401,7 @@
                 this.valorActualizar = this.items[item_id].valor;
                 this.tipoActualizar = this.items[item_id].tipo;
                 this.subtipoActualizar = this.items[item_id].subtipo;
+                this.fechaActualizar = this.items[item_id].fecha;
                 // Mostramos el formulario
                 this.formActualizar = true;
             },
@@ -396,8 +417,8 @@
                 this.items[item_id].valor = this.valorActualizar;
                 this.items[item_id].tipo = this.tipoActualizar;
                 this.items[item_id].subtipo = this.subtipoActualizar;
-            }
-
+                this.items[item_id].fecha = this.fechaActualizar;
+            },
         }
     }
 
@@ -409,65 +430,5 @@ $(function() {
 </script>
 
 <style>
-.btn{
-  margin-left: 10px;
-  padding: 5px 5px;
-}
-/* Estilos de la ventana modal */
-.modal-mask {
-  position: fixed;
-  z-index: 9998;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, .5);
-  display: table;
-  transition: opacity .3s ease;
-}
 
-.modal-wrapper {
-  display: table-cell;
-  vertical-align: middle;
-}
-
-.modal-container {
-  width: 800px;
-  margin: 0px auto;
-  padding: 20px 30px;
-  background-color: #fff;
-  border-radius: 2px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
-  transition: all .3s ease;
-  font-family: Helvetica, Arial, sans-serif;
-}
-
-.modal-header h3 {
-  margin-top: 0;
-  color: #59B2E0;
-}
-
-.modal-body {
-  margin: 20px 0;
-}
-
-.modal-default-button {
-  float: right;
-  color: #fff;
-  background-color:#59B2E0;
-}
-
-.modal-enter {
-  opacity: 0;
-}
-
-.modal-leave-active {
-  opacity: 0;
-}
-
-.modal-enter .modal-container,
-.modal-leave-active .modal-container {
-  -webkit-transform: scale(1.1);
-  transform: scale(1.1);
-}
 </style>

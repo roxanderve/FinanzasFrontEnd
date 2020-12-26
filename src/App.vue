@@ -19,7 +19,7 @@
 				<a class="nav-link" href="" v-on:click="sign">Registrarse</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" href="">Contactenos</a>
+				<a class="nav-link" href="" v-on:click="contact">Contactenos</a>
 			</li>
 		</ul>
 	</nav>
@@ -49,6 +49,10 @@ export default {
 
 		sign: function(){
 			this.$router.push({name: "sign_up"})
+		},
+
+		contact: function(){
+			this.$router.push({name: "contact"})
 		},
 
     },
